@@ -3,30 +3,25 @@ import java.util.Collection;
 public class LinkedBlockingQueue<E> extends Base {
 
     int capacity;
-    LinkedBlockingQueue(int c) {
-        int capacity = c;
-    }
-    LinkedBlockingQueue() {
-        int capacity = Integer.MAX_VALUE;
-    }
+    Base<E> queue;
 
     //Pre:true
     //Post:size ==0
-    public void  clear(){removeAll();}
+    public void  clear(){queue.removeAll();}
 
     //Pre:true
     //Post: (??)
     public boolean	contains(Object o){
-        if (search(o, false) != -1) return true;
+        if (queue.search(o, false) != -1) return true;
         else return false;
     }
 
     //Pre:true
     //Post: (a.size == 0) && (c == c + a')
     public int	drainTo(Collection<E> c){
-        c.addAll((Collection<? extends E>) this);
-        int res = size();
-        removeAll();
+        c.addAll((Collection<? extends E>) queue);
+        int res = queue.size();
+        queue.removeAll();
         return  res;
     }
 
@@ -34,14 +29,15 @@ public class LinkedBlockingQueue<E> extends Base {
     //Post:{(capacity <= maxElements)&&(a.size == 0) && (c == c + a')} ||
     //     {(capacity >  maxElements) && (a.size= a'.size-maxElements) && (c == c + a)}
     public int	drainTo(Collection<Base<E>> c, Integer maxElements){
-        if (capacity <= maxElements || size < maxElements) return drainTo((Collection<E>) c);
+        if (capacity <= maxElements || queue.size() < maxElements) return drainTo((Collection<E>) c);
         else{
-            LinkedBlockingQueue<E> b = new LinkedBlockingQueue<E>();
-            subBase(0, this, maxElements, b);
+            Base<E> b = new Base<E>();
+            b.addAll(0, (Collection<?>) queue);
+            queue.subList(0, false, maxElements, true);
             c.add(b);
-            subBase(maxElements, this,  size, c);
+            subList(maxElements, true,  size(), true);
             removeAll();
-            addAll(size, (Collection) b);
+            addAll(size(), (Collection) b);
             return maxElements;
         }
     }
@@ -53,9 +49,8 @@ public class LinkedBlockingQueue<E> extends Base {
     //Pre:true
     //Post:{(a=a') && (size < capacity)} || {(size<capacity)&&(size=size'+1)&&(a[size-1]=e)}
     public boolean offer(E e){
-        if (size < capacity) {
-            size++;
-            add(size-1, e);
+        if (queue.size() < capacity) {
+            add(queue.size()-1, e);
             return true;
         }
         else return false;
@@ -71,12 +66,12 @@ public class LinkedBlockingQueue<E> extends Base {
 
     //Pre:true
     //Post:(size == 0) || (el = a[0])
-    public E peek(){if (size == 0) return null; else return (E) get(0);}
+    public E peek(){if (queue.size() == 0) return null; else return (E) get(0);}
 
     //Pre:true
     //Post:(size == 0) || {(el = a'[0]) && (size=size'-1) && ((el != a[0]))}
     public E poll(){
-        if (size == 0) return null;
+        if (queue.size() == 0) return null;
         else {
             E res = (E) get(0);
             remove(0);
@@ -112,7 +107,7 @@ public class LinkedBlockingQueue<E> extends Base {
 
     //Pre:true
     //Post:size==size'
-    public int size(){return size;}
+    public int size(){return queue.size();}
 
     public E take(){
         //TODO

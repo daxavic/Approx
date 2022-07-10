@@ -4,14 +4,14 @@ import java.util.Collection;
 // где capacity- исходная ёмкость, size - исходный размер
 //
 // постусловие по дефолту: capacity>=size, где capacity - выходная емкость, size - выходной размер
-public class Vector<E> extends Base{
+public class Vector<E>{
 
+    int capacity;
+    Base<E> vect;
 
-    private int capacity;
-
-    Vector(Base<E> vec){
-        capacity = vec.size() * 2;
-    }
+//    Vector(Base<E> vec){
+//        capacity = vec.size() * 2;
+//    }
 
 
 
@@ -19,34 +19,30 @@ public class Vector<E> extends Base{
     //Post: (size==size'+ 1) && (a[0]..a[size-2] == a'[0]..a'[size'-1]) && (a[size-1]=e)
 
     public boolean add(E e){
-        if (capacity == size) capacity++;
-        add(size-1, e);
+        if (capacity == vect.size()) capacity++;
+        vect.add(vect.size()-1, e);
         return true;
     }
 
     //Pre: (0<=index<size)
     //Post: (size==size'+ 1) && (a[0]..a[index-1]a[index+1]..a[size-2] == a'[0]..a'[size'-1]) && (a[index]==element)
     public void add(int index, Object element){
-        size ++;
-        if (capacity <  size + 1) capacity++;
-        add(index,element);
+        vect.add(index,element);
     }
 
     //Pre: true
     //Post: (a.size==a.size+b.size) && (capacity>=a.size+b.size) && (a==a'+b)
     public boolean addAll(Vector<? extends E> c){
-        size += c.size;
-        if (capacity <  size + c.size) capacity = size + c.size;
-        else addAll(size, (Collection) c);
+        if (capacity <  vect.size() + c.size()) capacity = vect.size() + c.size();
+        else vect.addAll(size(), (Collection) c);
         return true;
     }
 
     //Pre: true
     //Post: (size==size'+1) && (a[0]..a[size-2] == a'[0]..a'[size'-1]) && (a[size-1] = obj)
     public void addElement(E obj){
-        size++;
-        if (capacity < size) capacity *= 2; //не нашла как правильно увеличивать capacity(должен быть отдельный метод)
-        add(size-1,obj);
+        if (capacity < vect.size()) capacity *= 2; //не нашла как правильно увеличивать capacity(должен быть отдельный метод)
+        vect.add(size()-1,obj);
     }
 
     //Pre: true
@@ -55,20 +51,21 @@ public class Vector<E> extends Base{
 
     //Pre: true
     //Post: size == 0
-    public void clear(){removeAll();}
+    public void clear(){vect.removeAll();}
 
     //Pre: true
     //Post: a == b
     public Object clone(){
-        Vector<E> b = new Vector<>(new Base<E>());
-        subBase(0, this, size - 1, b);
+        Base<E> b = new Base<>();
+        b.addAll(0, (Collection<?>) vect);
+        b.subList(0, false, vect.size() - 1, false);
         return b;
     }
 
     //Pre: true
     //Post: true (не знаю, какое условие)
     public Boolean contains(Object o){
-        if (search(o, false) != -1) return true;
+        if (vect.search(o, false) != -1) return true;
         else return false;
     }
 
@@ -81,7 +78,7 @@ public class Vector<E> extends Base{
     // Пусть res - результат метода
     //Pre: (0<=index<size)
     //Post: (a=a')&&(res==a[index])
-    public E elementAt(int index){return get(index);}
+    public E elementAt(int index){return vect.get(index);}
 
     //Pre:  minCapacity > 0
     //Post: capacity < minCapacity
@@ -91,21 +88,22 @@ public class Vector<E> extends Base{
 
     //Pre: size > 0
     //Post: (a[0] == element) && (a == a') {или просто a[0] == element?}
-    public E firstElement(){return get(0);}
+    public E firstElement(){return vect.get(0);}
 
     //Pre: (0<=index<size)
     //Post: (res == a[index]) && (a == a') (или (res == a[index])?)
-    public E get(int index){return get(index);}
+    public E get(int index){return vect.get(index);}
 
     //Pre: true
     //Post: {(a[res] == o) && (0<res<size) && (a[0]..a[res-1] != o)} || {(a[0]..a[size - 1] != o) || (res = -1)}
-    public int indexOf(Object o){return search(o,false);}
+    public int indexOf(Object o){return vect.search(o,false);}
 
     //Pre: (0<=index<size)
     //Post: {(a[res] == o) && (index <= res<size) && (a[index]..a[res-1] != o)} || {a[index]..a[size - 1] != o) && (res = -1)}
     public int indexOf(Object o, int index){
-        Vector<E> b = new Vector<>(new Base<E>());
-        subBase(index, this, size-1, b);
+        Base<E> b = new Base<E>();
+        b.addAll(0, (Collection<?>) vect);
+        b.subList(index, true, size() -1, true);
         int index1 = b.search(o,false);
         if (index1 == -1) return -1;
         else return(index+index1);
@@ -114,29 +112,29 @@ public class Vector<E> extends Base{
     //Pre: (0<=index<size)
     //Post: (size==size'+ 1) && (a[0]..a[index-1]a[index+1]..a[size-2] == a'[0]..a'[size'-1]) && (a[index]==obj)
     public void insertElementAt(E obj, int index){
-        size++;
-        if (capacity <  size + 1) ensureCapacity(size + 1);
+        if (capacity <  vect.size() + 1) ensureCapacity(size() + 1);
         else add(index,obj);
     }
 
     //Pre: true
     //Post: {(size == 0) && (res == true }|| {(size != 0) && (res == false)}
     // {или Post: true}
-    public Boolean isEmpty(){return size == 0;}
+    public Boolean isEmpty(){return vect.size() == 0;}
 
     //Pre: size > 0
     //Post: (res = a[size - 1]) && (a == a')
-    public E lastElement(){return get(size - 1);}
+    public E lastElement(){return get(vect.size() - 1);}
 
     //Pre: size != 0
     //Post: {(a[res] == o) && (a[res + 1]..a[size-1] != o)} || (o not in a)
-    public int lastIndexOf(Object o){return search(o,true);}
+    public int lastIndexOf(Object o){return vect.search(o,true);}
 
     //Pre: size != 0
     //Post: {(a[res] == o) && (index<=res<size) && (a[res + 1]..a[size-1] != o)} || (a[index]..a[size - 1]!= o)
     public int lastIndexOf(Object o, int index){
-        Vector<E> b = new Vector<>(new Base<E>());
-        subBase(index, this, size-1, b);
+        Base<E> b = new Base<E>();
+        b.addAll(0, (Collection<?>) vect);
+        b.subList(index, true, b.size()-1, true);
         int index1 = b.search(o,true);
         if (index1 == -1) return -1;
         else return(index+index1);
@@ -144,7 +142,7 @@ public class Vector<E> extends Base{
 
     //Pre:(0<=index<size)
     //Post:(size=size' -1) && (a[0]..a[size-1] == a'[0]..a'[index-1][index+1]..a'[size'-1])
-    public void remove(int index){remove(index);}
+    public void remove(int index){vect.remove(index);}
 
     //Pre:true
     //Post:{(a'[index]==o)&&(size=size' -1) && (a[0]..a[size-1)==a'[0]..a'[index-1]a'[index+1}..a'[size'-1]} ||
@@ -152,14 +150,14 @@ public class Vector<E> extends Base{
     public Boolean remove(Object o){
         int index = indexOf(o);
         if(index != -1) {
-            remove(index);
+            vect.remove(index);
             return true;}
         else return false;
     }
 
     //Pre:true
     //Post: size == 0;
-    public Boolean removeAll(Vector<?> c){
+    public Boolean removeAll(Base<?> c){
         c.removeAll();
         if (c.size() == 0) return true;
         else return false;
@@ -167,40 +165,42 @@ public class Vector<E> extends Base{
 
     //Pre:  true
     //Post: size == 0
-    public void removeAllElements(){removeAll();}
+    public void removeAllElements(){vect.removeAll();}
 
     //Pre:true
     //Post:{(a'[index]==obj)&&(size=size' -1) && (a[0]..a[size-1]==a'[0]..a'[index-1]a'[index+1}..a'[size'-1])} ||
     // || {obj not in a}, где index - идекс o в векторе a
     public Boolean removeElement(Object obj){
         int index = indexOf(obj);
-        if(index != -1) {remove(index); return true;}
+        if(index != -1) {vect.remove(index); return true;}
         else return false;
     }
 
     //Pre:(0<=index<size)
     //Post:(size=size' -1) && (a[0]..a[size-1]==a'[0]..a'[index-1]a'[index+1}..a'[size'-1])
-    public void removeElementAt(int index){remove(index);}
+    public void removeElementAt(int index){vect.remove(index);}
 
     //Pre: (0<=fromIndex<=toIndex<size)
     //Post: (size=size'-(toIndex-fromIndex+1)) && (a[0]..a[size-1]==a'[0]..a[fromIndex-1]a'[toIndex]..a'[size'-1])
     protected void removeRange(int fromIndex, int toIndex){
-        Vector<E> b = new Vector<>(new Base<E>());
-        Vector<E> d = new Vector<>(new Base<E>());
-        subBase(toIndex, this, size-1, b);
-        subBase(0, this, fromIndex - 1, d);
-        removeAll();
-        this.addAll(b);
-        this.addAll(d);
+        Base<E> b = new Base<E>();
+        Base<E> d = new Base<E>();
+        b.addAll(0, (Collection<?>) vect);
+        d.addAll(0, (Collection<?>) b);
+        b.subList(toIndex, true, b.size()-1, true);
+        d.subList(0, true, fromIndex - 1, true);
+        vect.removeAll();
+        vect.addAll(0, (Collection<?>) b);
+        vect.addAll(vect.size(), (Collection<?>) d);
     }
 
     //Pre: (0<=index<size)
     //Post: (size==size')&&(a[index]==element)&&
     // &&(a[0]..a[index-1]a[index+1]..a[size-1]==a'[0]..a'[index-1]a'[index+1]..a'[size'-1])
     public E set(int index, E element){
-        add(index, element);
-        E res = get(index + 1);
-        remove(index + 1);
+        vect.add(index, element);
+        E res = vect.get(index + 1);
+        vect.remove(index + 1);
         return res;
     }
 
@@ -208,23 +208,24 @@ public class Vector<E> extends Base{
     //Post: (size==size')&&(a[index]==obj)&&
     // &&(a[0]..a[index-1]a[index+1]..a[size-1]==a'[0]..a'[index-1]a'[index+1]..a'[size'-1])
     public void setElementAt(E obj, int index){
-        add(index, obj);
-        remove(index + 1);
+        vect.add(index, obj);
+        vect.remove(index + 1);
     }
 
     //Pre: true
     //Post: size = newSize
     public void  setSize(int newSize){
-        if (newSize < size) removeRange(newSize,size);
+        int size;
+        if (newSize < vect.size()) removeRange(newSize, vect.size());
         else {
-            Vector<E> b = new Vector<>(new Base<E>());
-            b.size = size - newSize;
+            Base<E> b = new Base<E>();
+            size = vect.size() - newSize;
             add((E) b);}
     }
 
     //Pre: true
     //Post: size==size'
-    public int size(){return size();}
+    public int size(){return vect.size();}
 
 //    //Pre: (0<=fromIndex<=toIndex<size)
 //    //Post: size == toIndex-fromIndex+1
@@ -238,7 +239,7 @@ public class Vector<E> extends Base{
 
     //Pre: true
     //Post: capacity = size
-    public void trimToSize(){capacity = size;}
+    public void trimToSize(){capacity = vect.size();}
 
     public Object[] toArray(){
         //TODO

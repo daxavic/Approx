@@ -2,6 +2,8 @@ import java.util.Collection;
 
 public class AbstractQueue<E> extends Base{
 
+    Base<E> queue;
+
     int capacity;
     AbstractQueue(int c) {
         int capacity = c;
@@ -10,10 +12,9 @@ public class AbstractQueue<E> extends Base{
     // Pre: true
     //Post: (size==size'+ 1) && (a[0]..a[size-2] == a'[0]..a'[size'-1]) && (a[size-1]=e)
     public Boolean add(E e) throws Exception {
-        if (size == capacity) throw new Exception();// должно быть newIllegalStateException
+        if (queue.size() == capacity) throw new Exception();// должно быть newIllegalStateException
         else {
-            size++;
-            add(size - 1, e);
+            add(queue.size() - 1, e);
             return true;
         }
     }
@@ -26,12 +27,12 @@ public class AbstractQueue<E> extends Base{
 
     //Pre:true
     //Post:(size == 0)
-    public void clear(){removeAll();}
+    public void clear(){queue.removeAll();}
 
     //Pre:true
     //Post: (a = a' ) && (e=a[0])
     public E element(){
-        E res = (E) get(0);
+        E res = queue.get(0);
         return res;
     }
 
@@ -39,7 +40,7 @@ public class AbstractQueue<E> extends Base{
     //Post:(size=size' -1) && (a[0]..a[size-1] == a'[1]..a'[size'-1])&&(res==a'[0])
     // (size == size' - 1) && (a[0] != a'[0])
     public E remove(){
-        E res = (E) get(0);
+        E res = queue.get(0);
         remove(0);
         return res;
     }
