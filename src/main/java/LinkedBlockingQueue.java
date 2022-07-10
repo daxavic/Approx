@@ -46,8 +46,6 @@ public class LinkedBlockingQueue<E> extends Base {
         }
     }
 
-//    //Pre:true
-//    //Post:
 //    public Iterator<E>	iterator(){
 //        //TODO
 //    }
@@ -63,6 +61,7 @@ public class LinkedBlockingQueue<E> extends Base {
         else return false;
     }
 
+    //непонятно, как работать с TimeUnit
     //Pre:true
     //Post:
 //    public boolean	offer(E e, long timeout, TimeUnit unit){
@@ -85,6 +84,7 @@ public class LinkedBlockingQueue<E> extends Base {
         }
     }
 
+    //непонятно, как работать с TimeUnit и timeout, нужны циклы
     //Pre:true
     //Post:(size == 0) || {(el = a'[0]) && (size=size'-1) && ((el != a[0]))}
 //    public E poll(long timeout, TimeUnit unit)
