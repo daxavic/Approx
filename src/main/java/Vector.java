@@ -8,7 +8,7 @@ public class Vector<E> extends Base{
 
 
     private int capacity;
-    //gh
+
     Vector(Base<E> vec){
         capacity = vec.size() * 2;
     }

@@ -15,7 +15,7 @@ public class LinkedBlockingQueue<E> extends Base {
     public void  clear(){removeAll();}
 
     //Pre:true
-    //Post:(a[o] in a )
+    //Post: (??)
     public boolean	contains(Object o){
         if (search(o, false) != -1) return true;
         else return false;
@@ -51,7 +51,7 @@ public class LinkedBlockingQueue<E> extends Base {
 //    }
 
     //Pre:true
-    //Post:{(a=a') && (size < capacity)} || {(size<capacity)&&(size=size'+1)&&(a[last]=e)}
+    //Post:{(a=a') && (size < capacity)} || {(size<capacity)&&(size=size'+1)&&(a[size-1]=e)}
     public boolean offer(E e){
         if (size < capacity) {
             size++;
@@ -63,7 +63,7 @@ public class LinkedBlockingQueue<E> extends Base {
 
     //непонятно, как работать с TimeUnit
     //Pre:true
-    //Post:
+    //Post: {(a[size-1]=e)}
 //    public boolean	offer(E e, long timeout, TimeUnit unit){
 //        //TODO
 //    }
